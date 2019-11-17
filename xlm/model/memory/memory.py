@@ -135,7 +135,7 @@ class HashingMemory(nn.Module):
             for p in self.query_proj.parameters():
                 p.requires_grad = False
 
-    def forward(self, input):
+    def forward(self, input, return_scores=False):
         """
         Read from the memory.
         """
@@ -191,6 +191,9 @@ class HashingMemory(nn.Module):
         # merge heads / knn (since we sum heads)
         indices = indices.view(bs, self.heads * self.knn)                         # (bs, heads * knn)
         scores = scores.view(bs, self.heads * self.knn)                           # (bs, heads * knn)
+
+        if return_scores:
+            return scores, indices
 
         # weighted sum of values
         # output = self.values(indices) * scores.unsqueeze(-1)                    # (bs * heads, knn, v_dim)
